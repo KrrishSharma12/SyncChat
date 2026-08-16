@@ -9,99 +9,94 @@ const prisma = new PrismaClient({ adapter });
 
 
 export const getConversations = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user?.id;
-
-        if (!userId) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized",
-            });
-        }
-
-        const conversations = await prisma.conversation.findMany({
-            where: {
-                participants: {
-                    some: {
-                        id: userId,
-                    },
-                },
-            },
-
-            include: {
-                participants: {
-                    select: {
-                        id: true,
-                        username: true,
-                        profilePic: true,
-                    },
-                },
-
-                messages: {
-                    orderBy: {
-                        createdAt: "desc",
-                    },
-                    take: 1,
-                },
-            },
-
-            orderBy: {
-                updatedAt: "desc",
-            },
-        });
-
-        const formattedConversations = await Promise.all(
-            conversations.map(async (conversation) => {
-
-                const participant = conversation.participants.find(
-                    (user) => user.id !== userId
-                );
-
-                const unreadCount = await prisma.message.count({
-                    where: {
-                        conversationId: conversation.id,
-
-                        senderId: {
-                            not: userId,
-                        },
-
-                        readAt: null,
-                    },
-                });
-
-                return {
-                    conversationId: conversation.id,
-
-                    participant,
-
-                    lastMessage:
-                        conversation.messages[0]?.content ?? "",
-
-                    updatedAt: conversation.updatedAt,
-
-                    unreadCount,
-
-                    online: false,
-                };
-            })
-        );
-
-        return res.status(200).json({
-            success: true,
-            conversations: formattedConversations,
-        });
-
-    } catch (error) {
-        console.error(error);
-
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-        });
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
     }
 
+    // Get conversations where:
+    // 1. Current user is a participant
+    // 2. Current user has NOT deleted the conversation
+    const conversations =await prisma.conversation.findMany({
+        where: {
+          participants: {
+            some: {
+              id: userId,
+            },
+          },
 
+          NOT: {
+            deletedBy: {
+              has: userId,
+            },
+          },
+        },
 
+        include: {
+          participants: {
+            select: {
+              id: true,
+              username: true,
+              profilePic: true,
+            },
+          },
+
+          messages: {
+            orderBy: {
+              createdAt: "desc",
+            },
+
+            take: 1,
+          },
+        },
+
+        orderBy: {
+          updatedAt: "desc",
+        },
+      });
+
+    // Format conversations for frontend
+    const formattedConversations =
+      conversations.map((conversation) => {
+
+        // Find the other participant
+        const participant =conversation.participants.find((user) => user.id !== userId);
+
+        return {
+          conversationId: conversation.id,
+
+          participant: participant
+            ? {
+                id: participant.id,
+                username: participant.username,
+                profilePic: participant.profilePic,
+              }
+            : null,
+
+          lastMessage:
+            conversation.messages[0]?.content ?? "",
+
+          updatedAt:conversation.updatedAt,
+          unreadCount: 0,
+          online: false,
+        };
+      });
+
+    return res.status(200).json({success: true,conversations: formattedConversations,
+    });
+
+  } catch (error) {
+    console.error("Get conversations error:",error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 };
 
 export const getConversationWithUser = async (req: Request, res: Response) => {
@@ -180,10 +175,7 @@ export const getConversationWithUser = async (req: Request, res: Response) => {
         });
 
     } catch (error) {
-        console.error(
-            "Error fetching conversation with user:",
-            error
-        );
+        console.error("Error fetching conversation with user:",error);
 
         return res.status(500).json({
             success: false,
@@ -288,48 +280,63 @@ export const sendMessage = async (req: Request, res: Response) => {
             }
 
             // Find existing conversation
-            let conversation = await tx.conversation.findUnique({
-                where: {
-                    directChatKey,
-                },
-            });
+          let conversation = await tx.conversation.findUnique({
+  where: {
+    directChatKey,
+  },
+});
 
-            // Create conversation if not exists
-            if (!conversation) {
-                conversation = await tx.conversation.create({
-                    data: {
-                        directChatKey,
-                        isGroup: false,
-                        participants: {
-                            connect: [
-                                {
-                                    id: senderId,
-                                },
-                                {
-                                    id: receiverId,
-                                },
-                            ],
-                        },
-                    },
-                });
-            }
-            await tx.conversation.update({
-                where: {
-                    id: conversation.id,
-                },
-                data: {
-                    updatedAt: new Date(),
-                },
-            });
+if (!conversation) {
+  conversation = await tx.conversation.create({
+    data: {
+      directChatKey,
+      isGroup: false,
 
+      participants: {
+        connect: [
+          {
+            id: senderId,
+          },
+          {
+            id: receiverId,
+          },
+        ],
+      },
+
+      deletedBy: [],
+    },
+  });
+} else {
+  // Sender had previously deleted this chat.
+  // Make it visible again for sender.
+
+  const updatedDeletedBy =
+    conversation.deletedBy.filter(
+      (id) => id !== senderId
+    );
+
+  conversation = await tx.conversation.update({
+    where: {
+      id: conversation.id,
+    },
+
+    data: {
+      deletedBy: {
+        set: updatedDeletedBy,
+      },
+
+      updatedAt: new Date(),
+    },
+  });
+}
             // Save message
-            const message = await tx.message.create({
-                data: {
-                    content: content.trim(),
-                    senderId,
-                    conversationId: conversation.id,
-                },
-            });
+         const message = await tx.message.create({
+  data: {
+    content: content.trim(),
+    senderId,
+    conversationId: conversation.id,
+  },
+});
 
             return {
                 conversation,
@@ -376,9 +383,6 @@ export const getMessages = async (req: Request, res: Response) => {
     try {
 
         const userId = req.user?.id;
-
-
-
         const conversationId = req.params.conversationId as string;
 
         if (!userId) {
@@ -517,89 +521,69 @@ export const getMessages = async (req: Request, res: Response) => {
 
 
 
-export const deleteConversation = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user?.id;
-        const { conversationId } = req.params;
-        if (!conversationId || Array.isArray(conversationId)) {
-            return res.status(400).json({
-                success: false,
-                message: "Conversation ID is required",
-            });
-        }
-        if (!userId) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized",
-            });
-        }
+export const deleteConversation = async (req: Request,res: Response) => {
+  try {
+    const userId = req.user?.id;
+const conversationId = req.params.conversationId as string;
 
-        if (!conversationId) {
-            return res.status(400).json({
-                success: false,
-                message: "Conversation ID is required",
-            });
-        }
-
-        // Check that the current user
-        // actually belongs to this conversation
-
-        const conversation =
-            await prisma.conversation.findFirst({
-                where: {
-                    id: conversationId,
-
-                    participants: {
-                        some: {
-                            id: userId,
-                        },
-                    },
-                },
-
-                select: {
-                    id: true,
-                },
-            });
-
-        if (!conversation) {
-            return res.status(404).json({
-                success: false,
-                message: "Conversation not found",
-            });
-        }
-
-        // Remove ONLY the current user
-        // from this conversation
-
-        await prisma.conversation.update({
-            where: {
-                id: conversationId,
-            },
-
-            data: {
-                participants: {
-                    disconnect: {
-                        id: userId,
-                    },
-                },
-            },
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: "Chat deleted successfully",
-            conversationId,
-        });
-
-    } catch (error) {
-        console.error(
-            "Delete conversation error:",
-            error
-        );
-
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-        });
+  
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
     }
+
+    if (!conversationId) {
+      return res.status(400).json({
+        success: false,
+        message: "Conversation ID is required",
+      });
+    }
+
+    const conversation =
+      await prisma.conversation.findFirst({
+        where: {
+          id: conversationId!,
+
+          participants: {
+            some: {
+              id: userId,
+            },
+          },
+        },
+      });
+
+    if (!conversation) {
+      return res.status(404).json({
+        success: false,
+        message: "Conversation not found",
+      });
+    }
+
+    await prisma.conversation.update({
+      where: {
+        id: conversationId,
+      },
+
+      data: {
+        deletedBy: {
+          push: userId,
+        },
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Chat deleted successfully",
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 };

@@ -183,11 +183,13 @@ useEffect(() => {
 
   const filteredChats = useMemo(() => {
 
-    return chats.filter((chat) =>
+  return chats.filter((chat) =>
+    chat.participant?.username
+      ?.toLowerCase()
+      .includes(search.toLowerCase())
+  );
 
-      chat.participant.username.toLowerCase().includes(search.toLowerCase()));
-
-  }, [chats, search]);
+}, [chats, search]);
 
   if (isLoading || loadingChats) {
 

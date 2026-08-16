@@ -56,7 +56,7 @@ model Message {
 model Conversation {
 
   id String @id @default(uuid())
-
+  deletedBy String[] @default([])
   directChatKey String? @unique
 
   isGroup Boolean @default(false)
