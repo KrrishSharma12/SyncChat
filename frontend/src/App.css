@@ -1,0 +1,9 @@
+/* Hide "What's your mood?" preview */
+.emoji-picker-container .epr-preview {
+  display: none !important;
+}
+
+/* Hide search bar */
+.emoji-picker-container .epr-search-container {
+  display: none !important;
+}

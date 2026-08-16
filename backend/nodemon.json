@@ -1,0 +1,5 @@
+{
+  "watch": ["app.ts", "routes", "controllers", "middleware", "utils", "config"],
+  "ext": "ts,json",
+  "exec": "tsx watch"
+}
