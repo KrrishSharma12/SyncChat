@@ -27,8 +27,6 @@ type loginResponse = {
 
 export const userSignup = async (username: string, email: string, password: string, profileUrl: File) => {
   const formData = new FormData();
-console.log("hello");
-
   formData.append("username", username);
   formData.append("email", email);
   formData.append("password", password.toString());

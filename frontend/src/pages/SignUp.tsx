@@ -28,6 +28,19 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]{2,19}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+     if (!usernameRegex.test(username.trim())) {
+      toast.error("Username must be 3-20 characters and contain only letters, numbers, _ or -");
+      return;
+    }
+
+    // Email validation
+    if (!emailRegex.test(email.trim())) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
 
     if (!profileUrl) {
       toast.error("Please upload your profile image");
@@ -35,12 +48,7 @@ const SignUp = () => {
     }
 
     try {
-      const response = await userSignup(
-        username,
-        email,
-        password,
-        profileUrl
-      );
+      const response = await userSignup( username,email,password,profileUrl);
       if (response.success) {
         toast.success(response.message);
        
@@ -214,9 +222,6 @@ const SignUp = () => {
 
             </div>
 
-
-
-            {/* Checkbox */}
             <div className="flex items-start gap-2 text-sm text-gray-600">
               <input
                 id="check-box"
