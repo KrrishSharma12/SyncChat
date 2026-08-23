@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import Toastify from "../components/ui/toastify";
 import { useAuthStore } from "@/store/authStore";
+import axios from "axios";
 
 const SignUp = () => {
   const [privacy, setprivacy] = useState<boolean>(false)
@@ -65,11 +66,18 @@ const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]{2,19}$/;
       setpassword("");
       setprivacy(false);
 
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Signup failed";
-      toast.error(message);
-      console.log(error);
-    }
+   } catch (error: unknown) {
+  if (axios.isAxiosError(error)) {
+    const message =
+      error.response?.data?.message || "Signup failed";
+
+    toast.error(message);
+  } else {
+    toast.error("Signup failed");
+  }
+
+  console.log(error);
+}
   };
 
 

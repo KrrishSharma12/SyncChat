@@ -8,7 +8,7 @@ import {
   IoPerson,
   IoSunny,
 } from "react-icons/io5";
-
+import axios from "axios";
 import Sidebar from "../components/SideBar";
 import { useAuthStore } from "../store/authStore";
 import { useThemeStore } from "../store/themeStore";
@@ -103,7 +103,7 @@ const Setting = () => {
   }
 
 
- 
+
 
   // const saveAvatar = async () => {
 
@@ -267,19 +267,20 @@ const Setting = () => {
         );
 
 
-      } catch (error: any) {
-
+      } catch (error: unknown) {
         console.error(
-          "Username update failed:",
+          "Password update failed:",
           error
         );
 
-
-        setMessage(
-          error?.response?.data?.message ||
-          "Failed to update username."
-        );
-
+        if (axios.isAxiosError(error)) {
+          setMessage(
+            error.response?.data?.message ||
+            "Failed to update password."
+          );
+        } else {
+          setMessage("Failed to update password.");
+        }
       }
 
     }
@@ -362,19 +363,20 @@ const Setting = () => {
         );
 
 
-      } catch (error: any) {
-
+      } catch (error: unknown) {
         console.error(
           "Password update failed:",
           error
         );
 
-
-        setMessage(
-          error?.response?.data?.message ||
-          "Failed to update password."
-        );
-
+        if (axios.isAxiosError(error)) {
+          setMessage(
+            error.response?.data?.message ||
+            "Failed to update password."
+          );
+        } else {
+          setMessage("Failed to update password.");
+        }
       }
 
     }

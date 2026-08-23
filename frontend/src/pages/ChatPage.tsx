@@ -88,10 +88,9 @@ const ChatPage: React.FC = () => {
 
     const handleNewMessage = async (data: {
       conversationId: string;
-      message: any;
+      message: Message;
     }) => {
 
-      // Sirf current conversation ka message add karo
       if (data.conversationId !== conversationId) {
         return;
       }

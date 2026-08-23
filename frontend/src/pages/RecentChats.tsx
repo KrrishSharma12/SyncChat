@@ -1,4 +1,4 @@
-import  { useEffect, useMemo, useState, } from "react";
+import { useEffect, useMemo, useState, } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -59,30 +59,35 @@ const RecentChats = () => {
 
 
 
-useEffect(() => {
+  useEffect(() => {
 
-  const closeContextMenu = () => {
-    setContextMenu(null);
-    setSelectedChat(null);
-  };
+    const closeContextMenu = () => {
+      setContextMenu(null);
+      setSelectedChat(null);
+    };
 
-  document.addEventListener( "click", closeContextMenu);
+    document.addEventListener("click", closeContextMenu);
 
-  return () => {
-     document.removeEventListener(
-      "click",
-      closeContextMenu
-    );
-  };
+    return () => {
+      document.removeEventListener(
+        "click",
+        closeContextMenu
+      );
+    };
 
-}, []);
+  }, []);
 
   useEffect(() => {
 
     const handleNewMessage = (data: {
       conversationId: string;
-      message: any;
+      message: {
+        content: string;
+        createdAt: string;
+      };
     }) => {
+
+
 
       setChats((prevChats) => {
 
@@ -150,46 +155,46 @@ useEffect(() => {
   }, []);
   const handleDeleteChat = async () => {
 
-  if (!selectedChat) {
-    return;
-  }
+    if (!selectedChat) {
+      return;
+    }
 
-  try {
+    try {
 
-    await deleteConversation(selectedChat.conversationId );
+      await deleteConversation(selectedChat.conversationId);
 
-    // Remove it immediately from UI
+      // Remove it immediately from UI
 
-    setChats((prev) =>
-      prev.filter(
-        (chat) =>
-          chat.conversationId !==
-          selectedChat.conversationId
-      )
-    );
+      setChats((prev) =>
+        prev.filter(
+          (chat) =>
+            chat.conversationId !==
+            selectedChat.conversationId
+        )
+      );
 
-    setContextMenu(null);
-    setSelectedChat(null);
+      setContextMenu(null);
+      setSelectedChat(null);
 
-  } catch (error) {
+    } catch (error) {
 
-    console.error(
-      "Failed to delete chat:",
-      error
-    );
+      console.error(
+        "Failed to delete chat:",
+        error
+      );
 
-  }
-};
+    }
+  };
 
   const filteredChats = useMemo(() => {
 
-  return chats.filter((chat) =>
-    chat.participant?.username
-      ?.toLowerCase()
-      .includes(search.toLowerCase())
-  );
+    return chats.filter((chat) =>
+      chat.participant?.username
+        ?.toLowerCase()
+        .includes(search.toLowerCase())
+    );
 
-}, [chats, search]);
+  }, [chats, search]);
 
   if (isLoading || loadingChats) {
 
@@ -368,19 +373,19 @@ useEffect(() => {
       </main>
 
       {contextMenu && selectedChat && (
-  <div className="fixed z-100 w-44 rounded-xl border bg-white py-1 shadow-lg"
-    style={{ left: contextMenu.x, top: contextMenu.y,}}
-    onClick={(e) => e.stopPropagation()}>
+        <div className="fixed z-100 w-44 rounded-xl border bg-white py-1 shadow-lg"
+          style={{ left: contextMenu.x, top: contextMenu.y, }}
+          onClick={(e) => e.stopPropagation()}>
 
-    <button
-      onClick={handleDeleteChat}
-      className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 "
-    >
-      Delete Chat
-    </button>
+          <button
+            onClick={handleDeleteChat}
+            className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 "
+          >
+            Delete Chat
+          </button>
 
-  </div>
-)}
+        </div>
+      )}
 
     </div>
   );
