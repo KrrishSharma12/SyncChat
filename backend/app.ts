@@ -19,8 +19,8 @@ app.use(cors({
 );
 
 
-app.get("/", (req: Request, res: Response) => {
-    res.send("Hel World");
+app.get("/api/health", (req: Request, res: Response) => {
+    res.send("Sync-Chat is running");
 });
 
 app.use('/auth', authRoutes);
