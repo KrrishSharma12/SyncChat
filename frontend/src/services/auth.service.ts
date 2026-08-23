@@ -25,19 +25,15 @@ type loginResponse = {
 
 }
 
-export const userSignup = async (username: string, email: string, password: string, profileUrl: File) => {
+export const userSignup = async (username: string, email: string, password: string, profileFile: File) => {  
   const formData = new FormData();
   formData.append("username", username);
   formData.append("email", email);
   formData.append("password", password.toString());
-  formData.append("profileUrl", profileUrl);
+formData.append("profile", profileFile);
   useAuthStore.setState({ isLoading: true });
   try {
-    const response = await api.post<signupResponse>("/auth/signup", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await api.post<signupResponse>("/auth/signup", formData);
 
     return response.data;
   } finally {
@@ -53,7 +49,6 @@ export const verifyEmail = async (email: string, otp: string) => {
 
 export const userLogin = async (email: string, password: string) => {
   useAuthStore.setState({ isLoading: true });
-console.log("hye");
 
   try {
     const response = await api.post<loginResponse>("/auth/login", { email, password });

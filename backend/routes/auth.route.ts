@@ -8,7 +8,7 @@ import { validate } from "../middleware/validate.middleware";
 import { loginSchema, signupSchema, verifyEmailSchema } from "../schemas/auth.schema";
 const router = Router();
 router.post("/google",googleLogin);
-router.post("/signup", validate(signupSchema), upload.single("profileUrl"), signupUser)
+router.post("/signup",upload.single("profile"), validate(signupSchema), signupUser)
 router.post("/verify", validate(verifyEmailSchema), verifyEmail)
 router.post("/login", validate(loginSchema), loginUser)
 router.get("/getme", authMiddleware, getMe)

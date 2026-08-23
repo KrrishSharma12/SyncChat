@@ -140,7 +140,7 @@ const Dashboard: React.FC = () => {
                                         >
                                             <img src={u.profilePic || "/default-avatar.png"} alt={u.username} className="w-12 h-12 rounded-full object-cover" />
 
-                                            <div className="flex flex-col items-start">
+                                            <div className="flex flex-col items-start text-black">
                                                 <span className="font-semibold">
                                                     {u.username}
                                                 </span>
