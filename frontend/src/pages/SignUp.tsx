@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeftRight, Pen, MoveRight } from "lucide-react";
-import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { userSignup } from "../services/auth.service";
 import { toast } from 'react-toastify';

@@ -52,8 +52,8 @@ const Setting = () => {
   const [avatarPreview, setAvatarPreview] =
     useState<string | null>(null);
 
-  const [avatarFile, setAvatarFile] =
-    useState<File | null>(null);
+  // const [avatarFile, setAvatarFile] =
+  //   useState<File | null>(null);
 
 
   const fileInputRef =
@@ -81,9 +81,7 @@ const Setting = () => {
     user?.profile || null;
 
 
-  // -----------------------------
-  // Set initial username
-  // -----------------------------
+
 
   if (
     username === "" &&
@@ -105,56 +103,53 @@ const Setting = () => {
   }
 
 
-  // -----------------------------
-  // Save Avatar
-  // -----------------------------
+ 
 
-  const saveAvatar = async () => {
+  // const saveAvatar = async () => {
 
-    if (!avatarFile) {
-      return;
-    }
+  //   if (!avatarFile) {
+  //     return;
+  //   }
 
 
-    try {
+  //   try {
 
-      const response =
-        await updateProfile({
-          profilePic: avatarFile,
-        });
-
-
-      setCurrentUser(
-        response.user
-      );
+  //     const response =
+  //       await updateProfile({
+  //         profilePic: avatarFile,
+  //       });
 
 
-      setAvatarFile(null);
+  //     setCurrentUser(
+  //       response.user
+  //     );
 
 
-      setMessage(
-        "Profile picture updated successfully."
-      );
+  //     setAvatarFile(null);
 
 
-    } catch (error: any) {
-
-      console.error(error);
-
-
-      setMessage(
-        error?.response?.data?.message ||
-        "Failed to update profile picture."
-      );
-
-    }
-
-  };
+  //     setMessage(
+  //       "Profile picture updated successfully."
+  //     );
 
 
-  // -----------------------------
+  //   } catch (error: any) {
+
+  //     console.error(error);
+
+
+  //     setMessage(
+  //       error?.response?.data?.message ||
+  //       "Failed to update profile picture."
+  //     );
+
+  //   }
+
+  // };
+
+
   // Select Avatar
-  // -----------------------------
+
 
   const handleAvatarUpload = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -197,7 +192,6 @@ const Setting = () => {
     }
 
 
-    setAvatarFile(file);
 
 
     // Preview only
@@ -397,10 +391,9 @@ const Setting = () => {
           min-h-screen
           overflow-x-hidden
 
-          ${
-            theme === "dark"
-              ? "bg-slate-950 text-zinc-100"
-              : "bg-[#f9f9ff] text-gray-900"
+          ${theme === "dark"
+            ? "bg-slate-950 text-zinc-100"
+            : "bg-[#f9f9ff] text-gray-900"
           }
         `}
       >
@@ -472,10 +465,9 @@ const Setting = () => {
 
               md:p-8
 
-              ${
-                theme === "dark"
-                  ? "border-slate-800 bg-slate-900/95"
-                  : "border-gray-200 bg-white/90"
+              ${theme === "dark"
+                ? "border-slate-800 bg-slate-900/95"
+                : "border-gray-200 bg-white/90"
               }
             `}
           >
@@ -664,10 +656,9 @@ const Setting = () => {
 
                   sm:w-fit
 
-                  ${
-                    theme === "dark"
-                      ? "bg-slate-800 text-white hover:bg-slate-700"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ${theme === "dark"
+                    ? "bg-slate-800 text-white hover:bg-slate-700"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }
                 `}
               >
@@ -760,10 +751,9 @@ const Setting = () => {
                   sm:px-4
                   sm:py-4
 
-                  ${
-                    theme === "dark"
-                      ? "border-zinc-800 bg-slate-900"
-                      : "border-gray-200 bg-gray-50"
+                  ${theme === "dark"
+                    ? "border-zinc-800 bg-slate-900"
+                    : "border-gray-200 bg-gray-50"
                   }
                 `}
 
@@ -791,10 +781,9 @@ const Setting = () => {
                       rounded-xl
                       p-2
 
-                      ${
-                        theme === "dark"
-                          ? "bg-zinc-950"
-                          : "bg-white"
+                      ${theme === "dark"
+                        ? "bg-zinc-950"
+                        : "bg-white"
                       }
                     `}
                   >
@@ -879,10 +868,9 @@ const Setting = () => {
 
                       sm:px-4
 
-                      ${
-                        theme === "dark"
-                          ? "border-zinc-800 bg-slate-900"
-                          : "border-gray-200 bg-white"
+                      ${theme === "dark"
+                        ? "border-zinc-800 bg-slate-900"
+                        : "border-gray-200 bg-white"
                       }
                     `}
                   >
@@ -923,10 +911,9 @@ const Setting = () => {
                         focus:ring-2
                         focus:ring-indigo-500/20
 
-                        ${
-                          theme === "dark"
-                            ? "border-zinc-700 bg-zinc-950 text-white"
-                            : "border-gray-300 bg-white text-gray-900"
+                        ${theme === "dark"
+                          ? "border-zinc-700 bg-zinc-950 text-white"
+                          : "border-gray-300 bg-white text-gray-900"
                         }
                       `}
                     />
@@ -987,10 +974,9 @@ const Setting = () => {
 
                           sm:w-auto
 
-                          ${
-                            theme === "dark"
-                              ? "bg-slate-800 text-zinc-200"
-                              : "bg-gray-100 text-gray-700"
+                          ${theme === "dark"
+                            ? "bg-slate-800 text-zinc-200"
+                            : "bg-gray-100 text-gray-700"
                           }
                         `}
                       >
@@ -1025,10 +1011,9 @@ const Setting = () => {
                   sm:px-4
                   sm:py-4
 
-                  ${
-                    theme === "dark"
-                      ? "border-zinc-800 bg-slate-900"
-                      : "border-gray-200 bg-gray-50"
+                  ${theme === "dark"
+                    ? "border-zinc-800 bg-slate-900"
+                    : "border-gray-200 bg-gray-50"
                   }
                 `}
 
@@ -1056,10 +1041,9 @@ const Setting = () => {
                       rounded-xl
                       p-2
 
-                      ${
-                        theme === "dark"
-                          ? "bg-zinc-950"
-                          : "bg-white"
+                      ${theme === "dark"
+                        ? "bg-zinc-950"
+                        : "bg-white"
                       }
                     `}
                   >
@@ -1144,10 +1128,9 @@ const Setting = () => {
 
                       sm:px-4
 
-                      ${
-                        theme === "dark"
-                          ? "border-zinc-800 bg-slate-900"
-                          : "border-gray-200 bg-white"
+                      ${theme === "dark"
+                        ? "border-zinc-800 bg-slate-900"
+                        : "border-gray-200 bg-white"
                       }
                     `}
                   >
@@ -1194,10 +1177,9 @@ const Setting = () => {
                         focus:ring-2
                         focus:ring-indigo-500/20
 
-                        ${
-                          theme === "dark"
-                            ? "border-zinc-700 bg-zinc-950 text-white"
-                            : "border-gray-300 bg-white text-gray-900"
+                        ${theme === "dark"
+                          ? "border-zinc-700 bg-zinc-950 text-white"
+                          : "border-gray-300 bg-white text-gray-900"
                         }
                       `}
                     />
@@ -1244,10 +1226,9 @@ const Setting = () => {
                         focus:ring-2
                         focus:ring-indigo-500/20
 
-                        ${
-                          theme === "dark"
-                            ? "border-zinc-700 bg-zinc-950 text-white"
-                            : "border-gray-300 bg-white text-gray-900"
+                        ${theme === "dark"
+                          ? "border-zinc-700 bg-zinc-950 text-white"
+                          : "border-gray-300 bg-white text-gray-900"
                         }
                       `}
                     />
@@ -1284,7 +1265,7 @@ const Setting = () => {
                       placeholder="Confirm password"
 
                       className={`w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20
-${theme === "dark"? "border-zinc-700 bg-zinc-950 text-white": "border-gray-300 bg-white text-gray-900"}
+${theme === "dark" ? "border-zinc-700 bg-zinc-950 text-white" : "border-gray-300 bg-white text-gray-900"}
                       `}
                     />
                     {/* Buttons */}
@@ -1344,10 +1325,9 @@ ${theme === "dark"? "border-zinc-700 bg-zinc-950 text-white": "border-gray-300 b
 
                           sm:w-auto
 
-                          ${
-                            theme === "dark"
-                              ? "bg-slate-800 text-zinc-200"
-                              : "bg-gray-100 text-gray-700"
+                          ${theme === "dark"
+                            ? "bg-slate-800 text-zinc-200"
+                            : "bg-gray-100 text-gray-700"
                           }
                         `}
                       >

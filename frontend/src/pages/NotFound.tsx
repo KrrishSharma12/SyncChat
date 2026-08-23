@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { IoArrowBack, IoHomeOutline } from "react-icons/io5";
 
