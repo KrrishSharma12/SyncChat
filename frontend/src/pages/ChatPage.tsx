@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { socket } from "../socket/socket";
 import Sidebar from "../components/SideBar";
 import EmojiPicker, { Theme } from "emoji-picker-react";
-import { IoMenu, IoVideocam, IoCall, IoSearch, IoAdd, IoHappy, IoSend, IoCheckmarkDone, IoChatbubbles, IoSync, IoSettings } from "react-icons/io5";
+import { IoMenu, IoCall, IoAdd, IoHappy, IoSend, IoCheckmarkDone, IoChatbubbles, IoSync, IoSettings } from "react-icons/io5";
 import { BiSolidDownArrowAlt } from "react-icons/bi";
 
 import { IoMdArrowBack } from "react-icons/io";
