@@ -214,7 +214,11 @@ const Dashboard: React.FC = () => {
 
                                         results.map((u) => (
 
-                                            <button
+                                            <button onClick={() => {
+                                            navigate(`/chat/user/${u.id}`);
+                                            setsearch("");
+                                        }}
+                                            
                                                 key={u.id}
                                                 className="w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-100 transition"
                                             >
