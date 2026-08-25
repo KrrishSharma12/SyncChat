@@ -406,11 +406,7 @@ useEffect(() => {
 
           <div className="flex items-center gap-2">
 
-            <button className="p-2 rounded-full hover:bg-gray-100 transition">
-
-              <IoVideocam size={22} />
-
-            </button>
+          
 
             <button className="p-2 rounded-full hover:bg-gray-100 transition">
 
@@ -418,11 +414,7 @@ useEffect(() => {
 
             </button>
 
-            <button className="p-2 rounded-full hover:bg-gray-100 transition">
-
-              <IoSearch size={22} />
-
-            </button>
+          
 
           </div>
 
