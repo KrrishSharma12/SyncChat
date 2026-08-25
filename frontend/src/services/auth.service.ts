@@ -49,10 +49,7 @@ export const verifyEmail = async (email: string, otp: string) => {
 
 export const userLogin = async (email: string, password: string) => {
   useAuthStore.setState({ isLoading: true });
-console.log(
-  "API URL:",
-  import.meta.env.VITE_API_BASE_URL
-);
+
   try {
     const response = await api.post<loginResponse>("/auth/login", { email, password });
     useAuthStore.setState({ isLoading: false });
