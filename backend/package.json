@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   
-  "scripts": {
+ "scripts": {
   "dev": "tsx watch server.ts",
-  "type-check": "tsc --noEmit",
+  "build": "tsc",
+  "start": "node dist/server.js",
   "test": "echo \"Error: no test specified\" && exit 1"
 },
   "keywords": [],
