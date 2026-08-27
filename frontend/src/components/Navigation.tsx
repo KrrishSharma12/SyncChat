@@ -1,15 +1,30 @@
 import { logoutUser } from "@/services/auth.service";
 import { useAuthStore } from "@/store/authStore";
 import { useThemeStore } from "@/store/themeStore";
+import { useState } from "react";
 import { IoLogOut, IoSearchSharp, IoChatbubbles, IoSettings } from "react-icons/io5"
 import { useNavigate, useLocation } from "react-router-dom";
+import ConfirmModal from "./ConfirmModel";
 const Navigation = () => {
     const theme = useThemeStore((state) => state.theme);
     const user = useAuthStore((state) => state.user);
     const navigate = useNavigate();
     const location = useLocation();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+
     const isActive = (path: string) => {
         return location.pathname === path;
+    };
+    const handleLogout = async () => {
+        try {
+            const response = await logoutUser();
+            if (response.success) {
+                useAuthStore.getState().logout();
+                navigate("/login");
+            }
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
     };
     return (
         <div>
@@ -77,18 +92,8 @@ const Navigation = () => {
                         ? "text-slate-300 hover:bg-slate-800"
                         : "text-gray-600 hover:bg-gray-100"
                     }`} onClick={async () => {
-                        const confirmLogout = window.confirm("Are you sure you want to logout?");
-                        if (confirmLogout) {
-                            try {
-                                const response = await logoutUser();
-                                if (response.success) {
-                                    useAuthStore.getState().logout();
-                                    navigate("/login");
-                                }
-                            } catch (error) {
-                                console.error("Logout failed:", error);
-                            }
-                        }
+                        setShowLogoutModal(true);
+
                     }}>
 
                     <IoLogOut size={22} />
@@ -98,7 +103,13 @@ const Navigation = () => {
                     </span>
 
                 </button>
-
+                <ConfirmModal
+                    isOpen={showLogoutModal}
+                    title="Confirm Logout"
+                    message="Are you sure you want to logout?"
+                    onConfirm={handleLogout}
+                    onCancel={() => setShowLogoutModal(false)}
+                />
 
 
 
