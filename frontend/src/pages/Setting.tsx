@@ -1,22 +1,12 @@
 import React, { useRef, useState } from "react";
-import {
-  IoCamera,
-  IoChevronDown,
-  IoChevronForward,
-  IoLockClosed,
-  IoMoon,
-  IoPerson,
-  IoSunny,
-} from "react-icons/io5";
+import {IoCamera, IoChevronDown, IoChevronForward,IoLockClosed, IoMoon, IoPerson, IoSunny,} from "react-icons/io5";
 import axios from "axios";
+import Navigation from "../components/Navigation";
 import Sidebar from "../components/SideBar";
 import { useAuthStore } from "../store/authStore";
 import { useThemeStore } from "../store/themeStore";
 import Footer from "@/components/Footer";
-import {
-  updateProfile,
-  changePassword,
-} from "@/services/user.service";
+import { updateProfile, changePassword,} from "@/services/user.service";
 import { ToastContainer } from "react-toastify";
 
 
@@ -1352,6 +1342,7 @@ ${theme === "dark" ? "border-zinc-700 bg-zinc-950 text-white" : "border-gray-300
 
 
         <Footer />
+        <Navigation />
 
       </div>
 

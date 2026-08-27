@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, } from "react";
 
 import { useNavigate } from "react-router-dom";
-
-import { IoMenu, IoSearch, IoChatbubbles, } from "react-icons/io5";
+import Navigation from "../components/Navigation";
+import { IoSearch, IoChatbubbles, } from "react-icons/io5";
 
 import Sidebar from "../components/SideBar";
 
@@ -237,12 +237,12 @@ const RecentChats = () => {
         {/* Header */}
         <header className={`h-16 ${theme === "dark" ? "bg-slate-900/80 border-slate-800" : "bg-white/80 border-gray-200"} backdrop-blur-md border-b flex items-center px-4 md:px-8 sticky top-0 z-30`}>
 
-          <button
+          {/* <button
             onClick={() => setSidebarOpen(true)}
             className="md:hidden text-indigo-600 mr-3"
           >
             <IoMenu size={28} />
-          </button>
+          </button> */}
 
           <h1 className=" font-semibold text-2xl text-indigo-600">
             Recent Chats
@@ -386,6 +386,8 @@ const RecentChats = () => {
 
         </div>
       )}
+
+      <Navigation />
 
     </div>
   );

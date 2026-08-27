@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { socket } from "../socket/socket";
 import Sidebar from "../components/SideBar";
 import EmojiPicker, { Theme } from "emoji-picker-react";
-import { IoMenu, IoCall, IoAdd, IoHappy, IoSend, IoCheckmarkDone, IoChatbubbles, IoSync, IoSettings } from "react-icons/io5";
+import { IoCall, IoAdd, IoHappy, IoSend, IoCheckmarkDone, IoChatbubbles, IoSync, IoSettings } from "react-icons/io5";
 import { BiSolidDownArrowAlt } from "react-icons/bi";
 
 import { IoMdArrowBack } from "react-icons/io";
@@ -369,9 +369,9 @@ useEffect(() => {
 
           <div className="flex items-center gap-3">
 
-            <button onClick={() => setSidebarOpen(true)} className="md:hidden text-indigo-600">
+            {/* <button onClick={() => setSidebarOpen(true)} className="md:hidden text-indigo-600">
               <IoMenu size={28} />
-            </button>
+            </button> */}
 
             <div className="relative ">
               <div className="flex justify-between items-center gap-6">

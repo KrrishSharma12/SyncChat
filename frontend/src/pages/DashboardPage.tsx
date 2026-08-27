@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/SideBar";
-import { IoSearch, IoSettings, IoMenu, IoNotifications, IoChatbubbles, IoCall, IoSync, IoPersonAdd, } from "react-icons/io5";
-
+import { IoSearch, IoNotifications, IoChatbubbles, IoPersonAdd, } from "react-icons/io5";
+import Navigation from "../components/Navigation";
 import { searchUsers } from "../services/user.service";
 import { useAuthStore } from "../store/authStore";
 import { useThemeStore } from "../store/themeStore";
@@ -81,7 +81,7 @@ const Dashboard: React.FC = () => {
             <Sidebar
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
-               
+
             />
 
             {/* Main */}
@@ -91,12 +91,12 @@ const Dashboard: React.FC = () => {
 
                 <header className={`h-16 ${theme === "dark" ? "bg-slate-900/80 border-slate-800" : "bg-white/80 border-gray-200"} backdrop-blur-md border-b flex items-center justify-between px-4 md:px-8 sticky top-0 z-30`}>
                     <div className="flex items-center gap-4">
-                        <button
+                        {/* <button
                             onClick={() => setSidebarOpen(true)}
                             className="md:hidden text-indigo-600"
                         >
                             <IoMenu size={28} />
-                        </button>
+                        </button> */}
 
                         <h2 className="text-2xl font-bold text-indigo-600">
                             Discover
@@ -176,7 +176,7 @@ const Dashboard: React.FC = () => {
 
                     <div className="sm:hidden relative w-full max-w-md">
 
-<div className={`flex items-center ${theme === "dark" ? "bg-slate-800 border-slate-700" : "bg-gray-100 border-gray-300/30"} rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-indigo-600/20`}>
+                        <div className={`flex items-center ${theme === "dark" ? "bg-slate-800 border-slate-700" : "bg-gray-100 border-gray-300/30"} rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-indigo-600/20`}>
 
                             <IoSearch size={20} className="text-gray-500 mr-2" />
 
@@ -215,10 +215,10 @@ const Dashboard: React.FC = () => {
                                         results.map((u) => (
 
                                             <button onClick={() => {
-                                            navigate(`/chat/user/${u.id}`);
-                                            setsearch("");
-                                        }}
-                                            
+                                                navigate(`/chat/user/${u.id}`);
+                                                setsearch("");
+                                            }}
+
                                                 key={u.id}
                                                 className="w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-100 transition"
                                             >
@@ -320,58 +320,7 @@ const Dashboard: React.FC = () => {
 
                 </button>
                 {/* Mobile Bottom Navigation */}
-
-                <nav className={`fixed bottom-0 left-0 right-0 h-16 ${theme === "dark" ? "bg-slate-900 border-slate-800" : "bg-white border-gray-200"} border-t flex justify-around items-center md:hidden z-40`}>
-
-
-                    <button className="flex flex-col items-center justify-center gap-1 text-xs text-indigo-600">
-
-                        <IoChatbubbles size={22} />
-
-                        <span>
-                            Chats
-                        </span>
-
-                    </button>
-
-
-
-                    <button className="flex flex-col items-center justify-center gap-1 text-xs text-gray-500">
-
-                        <IoCall size={22} />
-
-                        <span>
-                            Calls
-                        </span>
-
-                    </button>
-
-
-
-                    <button className="flex flex-col items-center justify-center gap-1 text-xs text-gray-500">
-
-                        <IoSync size={22} />
-
-                        <span>
-                            Status
-                        </span>
-
-                    </button>
-
-
-
-                    <button className="flex flex-col items-center justify-center gap-1 text-xs text-gray-500">
-
-                        <IoSettings size={22} />
-
-                        <span>
-                            Settings
-                        </span>
-
-                    </button>
-
-
-                </nav>
+                <Navigation />
 
 
             </main>
