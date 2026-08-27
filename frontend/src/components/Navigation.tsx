@@ -16,6 +16,7 @@ const Navigation = () => {
         return location.pathname === path;
     };
     const handleLogout = async () => {
+        
         try {
             const response = await logoutUser();
             if (response.success) {

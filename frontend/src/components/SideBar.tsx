@@ -1,10 +1,11 @@
 import { logoutUser } from "@/services/auth.service";
 import { useAuthStore } from "@/store/authStore";
 import { useThemeStore } from "@/store/themeStore";
-import React from "react";
+import React, { useState } from "react";
 import { IoSearch, IoChatbubbleEllipses, IoLogOut, IoClose, } from "react-icons/io5";
 import { useNavigate, useLocation } from "react-router-dom";
 import { IoSettings } from "react-icons/io5";
+import ConfirmModal from "./ConfirmModel";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -24,13 +25,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const theme = useThemeStore((state) => state.theme);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
-  const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleLogout = async () => {
     try {
       const response = await logoutUser();
       if (response.success) {
@@ -182,8 +183,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="px-3 pb-6">
 
         <button
-          onClick={(e) => {
-            handleLogout(e);
+          onClick={() => {
+            setShowLogoutModal(true);
 
           }}
           className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition ${theme === "dark" ? "text-red-400 hover:bg-red-950/40" : "text-red-600 hover:bg-red-50"}`}
@@ -202,7 +203,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
       </div>
-
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        title="Confirm Logout"
+        message="Are you sure you want to logout?"
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogoutModal(false)}
+      />
 
     </aside>
   );
