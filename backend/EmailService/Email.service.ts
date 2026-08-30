@@ -1,20 +1,9 @@
-
 import "dotenv/config";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { render } from "@react-email/render";
 import VerificationEmail from "./Email";
 
-
-
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-    },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendVerificationEmail(
     email: string,
@@ -30,12 +19,23 @@ export async function sendVerificationEmail(
             })
         );
 
-        await transporter.sendMail({
-            from: `"SyncChat" <${process.env.GMAIL_USER}>`,
-            to: email,
+        const { data, error } = await resend.emails.send({
+            from: "SyncChat <noreply@krrishlabs.tech>",
+            to: [email],
             subject: "Verify your email address",
             html: emailHtml,
         });
+
+        if (error) {
+            console.log("Resend error:", error);
+
+            return {
+                success: false,
+                message: "Failed to send verification email",
+            };
+        }
+
+        console.log("Email sent:", data);
 
         return {
             success: true,
@@ -51,4 +51,3 @@ export async function sendVerificationEmail(
         };
     }
 }
-

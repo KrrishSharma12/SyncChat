@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  
-"scripts": {
-  "dev": "tsx watch server.ts",
-  "start": "tsx server.ts",
-  "type-check": "tsc --noEmit",
-  "test": "echo \"Error: no test specified\" && exit 0"
-},
+  "scripts": {
+    "dev": "tsx watch server.ts",
+    "start": "tsx server.ts",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -27,7 +26,8 @@
     "multer": "^2.2.0",
     "nodemailer": "^9.0.4",
     "nodemon": "^3.1.14",
-    "pg": "^8.22.0"
+    "pg": "^8.22.0",
+    "resend": "^6.25.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

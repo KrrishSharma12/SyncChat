@@ -670,8 +670,8 @@ const Setting = () => {
 
                 {
                   theme === "dark"
-                    ? "Dark mode on"
-                    : "Dark mode off"
+                    ? "Dark mode off"
+                    : "Dark mode on"
                 }
 
               </button>

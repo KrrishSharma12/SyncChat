@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { socket } from "../socket/socket";
 import Sidebar from "../components/SideBar";
 import EmojiPicker, { Theme } from "emoji-picker-react";
-import { IoCall, IoAdd, IoHappy, IoSend, IoCheckmarkDone, IoChatbubbles, IoSync, IoSettings } from "react-icons/io5";
+import { IoCall, IoAdd, IoHappy, IoSend, IoCheckmarkDone, IoChatbubbles } from "react-icons/io5";
 import { BiSolidDownArrowAlt } from "react-icons/bi";
 
 import { IoMdArrowBack } from "react-icons/io";
@@ -164,7 +164,7 @@ const ChatPage: React.FC = () => {
 
         if (receiverId) {
 
-          const data =await getConversationWithUser(receiverId);
+          const data = await getConversationWithUser(receiverId);
 
           // Receiver details
           const fetchedUser = await getUser(receiverId);
@@ -208,58 +208,58 @@ const ChatPage: React.FC = () => {
 
   // Listen for online status updates
 
-useEffect(() => {
+  useEffect(() => {
 
-  const checkUserStatus = (data: {
-    userId: string;
-    online: boolean;
-  }) => {
-    if (data.userId === chatReceiverId) {
-      setIsOnline(data.online);
+    const checkUserStatus = (data: {
+      userId: string;
+      online: boolean;
+    }) => {
+      if (data.userId === chatReceiverId) {
+        setIsOnline(data.online);
+      }
+
+    };
+
+
+    socket.on("user-status", checkUserStatus);
+    return () => {
+      socket.off("user-status", checkUserStatus);
+    };
+  }, [chatReceiverId]);
+
+  useEffect(() => {
+
+    const handleStatusResponse = (data: {
+      userId: string;
+      online: boolean;
+    }) => {
+      if (data.userId === chatReceiverId) {
+        setIsOnline(data.online);
+      }
+
+    };
+
+
+    socket.on("user-status-response", handleStatusResponse);
+
+
+    return () => {
+      socket.off("user-status-response", handleStatusResponse);
+    };
+
+  }, [chatReceiverId]);
+
+  useEffect(() => {
+
+    if (!chatReceiverId) {
+      return;
     }
 
-  };
+
+    socket.emit("check-user-status", chatReceiverId);
 
 
-  socket.on("user-status",checkUserStatus);
-  return () => {
-    socket.off("user-status",checkUserStatus);
-  };
-}, [chatReceiverId]);
-
-useEffect(() => {
-
-  const handleStatusResponse = (data: {
-    userId: string;
-    online: boolean;
-  }) => {
-    if (data.userId === chatReceiverId) {
-      setIsOnline(data.online);
-    }
-
-  };
-
-
-  socket.on("user-status-response",handleStatusResponse);
-
-
-  return () => {
-    socket.off("user-status-response",handleStatusResponse);
-  };
-
-}, [chatReceiverId]);
-
-useEffect(() => {
-
-  if (!chatReceiverId) {
-    return;
-  }
-
-  
-  socket.emit("check-user-status",chatReceiverId);
-
-
-}, [chatReceiverId]);
+  }, [chatReceiverId]);
 
   useEffect(() => {
 
@@ -303,30 +303,42 @@ useEffect(() => {
 
   }, [conversationId]);
 
-  const handleSendMessage = async () => {
+ const handleSendMessage = async () => {
+  if (!message.trim()) return;
 
-    if (!message.trim()) return;
+  try {
+    const response = await sendMessage({
+      receiverId:
+        conversation?.participants.find(
+          (p: { id: string }) => p.id !== user?.id
+        )?.id ||
+        receiverId ||
+        "",
 
-    try {
+      content: message.trim(),
+    });
 
-      const response = await sendMessage({
-        receiverId: conversation?.participants.find((p: { id: string }) => p.id !== user?.id)?.id || receiverId || "",
-        content: message,
+    // Immediately show message for sender
+    setMessages((prev) => {
+      // Prevent duplicate if socket already added it
+      const alreadyExists = prev.some(
+        (msg) => msg.id === response.message.id
+      );
 
-      });
+      if (alreadyExists) {
+        return prev;
+      }
 
-      setMessages((prev) => [...prev, response.message,]);
+      return [...prev, response.message];
+    });
 
-      setMessage("");
-      setShowEmojiPicker(false);
+    setMessage("");
+    setShowEmojiPicker(false);
 
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
-  };
+  } catch (error) {
+    console.error("Failed to send message:", error);
+  }
+};
   if (isLoading || loadingMessages) {
 
     return (
@@ -406,7 +418,7 @@ useEffect(() => {
 
           <div className="flex items-center gap-2">
 
-          
+
 
             <button className="p-2 rounded-full hover:bg-gray-100 transition">
 
@@ -414,7 +426,7 @@ useEffect(() => {
 
             </button>
 
-          
+
 
           </div>
 
@@ -432,7 +444,7 @@ useEffect(() => {
 
             setShowScrollButton(!isNearBottom);
           }}
-          className="flex-1 overflow-y-auto px-4 md:px-8 py-6 flex flex-col gap-4"
+          className="flex-1 overflow-y-auto px-4 md:px-8 py-20 flex flex-col gap-4"
         >
 
           {/* Date */}
@@ -560,8 +572,8 @@ useEffect(() => {
             className="absolute right-6 bottom-24 z-20 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition"
             aria-label="Scroll to latest messages"
           >
-            <BiSolidDownArrowAlt size={25}/>
-            </button>
+            <BiSolidDownArrowAlt size={25} />
+          </button>
         )}
         {/* Chat Input */}
 
@@ -579,7 +591,9 @@ useEffect(() => {
 
             {/* Input */}
 
-            <div className="flex-1 relative flex items-center">
+            <div className="flex-1 relative flex flex-col justify-center">
+
+              {/* Typing indicator */}
               {isTyping && (
                 <div className="px-3 sm:px-4 md:px-8 pb-1.5">
                   <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500">
@@ -598,67 +612,83 @@ useEffect(() => {
                   </div>
                 </div>
               )}
-              <input value={message} onChange={(e) => {
-                const value = e.target.value;
-                setMessage(value);
 
-                if (!chatReceiverId || !conversationId) {
-                  return;
-                }
+              {/* Input */}
+              <div className="relative w-full">
+                <input
+                  value={message}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setMessage(value);
 
-                if (!value.trim()) {
-                  socket.emit("stop-typing", {
-                    receiverId: chatReceiverId,
-                    conversationId,
-                  });
+                    if (!chatReceiverId || !conversationId) {
+                      return;
+                    }
 
-                  return;
-                }
+                    if (!value.trim()) {
+                      socket.emit("stop-typing", {
+                        receiverId: chatReceiverId,
+                        conversationId,
+                      });
 
-                socket.emit("typing", {
-                  receiverId: chatReceiverId,
-                  conversationId,
-                });
+                      return;
+                    }
 
-                if (typingTimeoutRef.current) {
-                  clearTimeout(typingTimeoutRef.current);
-                }
+                    socket.emit("typing", {
+                      receiverId: chatReceiverId,
+                      conversationId,
+                    });
 
-                typingTimeoutRef.current = setTimeout(() => {
-                  socket.emit("stop-typing", {
-                    receiverId: chatReceiverId,
-                    conversationId,
-                  });
-                }, 1000);
-              }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleSendMessage();
-                  }
-                }}
+                    if (typingTimeoutRef.current) {
+                      clearTimeout(typingTimeoutRef.current);
+                    }
 
-                placeholder="Type a message..."
-                className={`w-full h-12 rounded-full border px-4 pr-12 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 ${theme === "dark"
-                  ? "border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-400"
-                  : "border-gray-300 bg-gray-50 text-gray-900"
-                  }`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowEmojiPicker((prev) => !prev)}
-                className="absolute right-3 text-gray-500 hover:text-indigo-600 transition"
-              >
-                <IoHappy size={22} />
-              </button>
-              {showEmojiPicker && (
-                <div className="absolute z-50 bottom-14 left-1/2 -translate-x-1/2 w-[calc(100vw-24px)] max-w-82.5 sm:left-auto sm:right-0 sm:translate-x-0 sm:w-auto sm:max-w-none ">
-                  <EmojiPicker theme={theme === "dark" ? Theme.DARK : Theme.LIGHT} width="100%" height={280} searchDisabled={true} previewConfig={{
-                    showPreview: false,
+                    typingTimeoutRef.current = setTimeout(() => {
+                      socket.emit("stop-typing", {
+                        receiverId: chatReceiverId,
+                        conversationId,
+                      });
+                    }, 1000);
                   }}
-                    onEmojiClick={(emojiData) => { setMessage((prev) => prev + emojiData.emoji); }}
-                  />
-                </div>
-              )}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSendMessage();
+                    }
+                  }}
+                  placeholder="Type a message..."
+                  className={`w-full h-12 rounded-full border px-4 pr-12 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 ${theme === "dark"
+                      ? "border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-400"
+                      : "border-gray-300 bg-gray-50 text-gray-900"
+                    }`}
+                />
+
+                {/* Emoji button */}
+                <button
+                  type="button"
+                  onClick={() => setShowEmojiPicker((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-indigo-600 transition"
+                >
+                  <IoHappy size={22} />
+                </button>
+
+                {/* Emoji picker */}
+                {showEmojiPicker && (
+                  <div className="absolute z-50 bottom-14 left-1/2 -translate-x-1/2 w-[calc(100vw-24px)] max-w-82.5 sm:left-auto sm:right-0 sm:translate-x-0 sm:w-auto sm:max-w-none">
+                    <EmojiPicker
+                      theme={theme === "dark" ? Theme.DARK : Theme.LIGHT}
+                      width="100%"
+                      height={280}
+                      searchDisabled={true}
+                      previewConfig={{
+                        showPreview: false,
+                      }}
+                      onEmojiClick={(emojiData) => {
+                        setMessage((prev) => prev + emojiData.emoji);
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Send */}
@@ -673,48 +703,9 @@ useEffect(() => {
 
         </footer>
 
-        {/* Mobile Bottom Navigation */}
 
-        <nav className={`fixed bottom-0 left-0 right-0 h-16 ${theme === "dark" ? "bg-slate-900/90 border-slate-800" : "bg-white/90 border-gray-200"} backdrop-blur-xl border-t flex items-center justify-around md:hidden z-40`}>
 
-          <button className="flex flex-col items-center gap-1 text-indigo-600 text-xs" >
-            <IoChatbubbles size={22} />
 
-            <span>Chats</span>
-
-          </button>
-
-          <button className="flex flex-col items-center gap-1 text-gray-500 text-xs">
-
-            <IoCall size={22} />
-
-            <span> Calls</span>
-
-          </button>
-
-          <button
-            className="flex flex-col items-center gap-1 text-gray-500 text-xs"
-          >
-
-            <IoSync size={22} />
-
-            <span> Status </span>
-
-          </button>
-
-          <button
-            className="flex flex-col items-center gap-1 text-gray-500 text-xs"
-          >
-
-            <IoSettings size={22} />
-
-            <span>
-              Settings
-            </span>
-
-          </button>
-
-        </nav>
 
       </main>
 
